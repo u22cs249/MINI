@@ -1,0 +1,48 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1a2e;
+    color: white;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #16213e;
+}
+
+.controls {
+    margin-top: 15px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    background-color: #e94560;
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+#visualizer-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 400px;
+    padding: 50px;
+}
+
+.bar {
+    width: 20px;
+    margin: 0 2px;
+    background-color: #0f3460;
+    transition: background-color 0.1s;
+}
+
+/* Colors for visualization states */
+.active { background-color: #e94560 !important; } /* Currently comparing */
+.sorted { background-color: #4ecca3 !important; } /* Final position */
