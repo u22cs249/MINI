@@ -2,24 +2,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlgoViz Lab</title>
+    <title>AlgoViz Lab | CS Edition</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>AlgoViz Lab</h1>
-        <div class="controls">
-            <button id="resetBtn">Generate New Array</button>
-            <button id="sortBtn">Start Bubble Sort</button>
-            <input type="range" id="speed" min="10" max="200" value="100">
-            <label for="speed">Speed</label>
-        </div>
-    </header>
+    <div class="app-container">
+        <aside class="sidebar">
+            <h2>AlgoViz Lab</h2>
+            <nav>
+                <button onclick="changeMode('sorting')">Sorting</button>
+                <button onclick="changeMode('searching')">Searching</button>
+                <button onclick="changeMode('graphs')">Graphs (BFS/DFS)</button>
+            </nav>
+            <div class="complexity-card">
+                <h3>Algorithm Info</h3>
+                <p id="algo-name">Bubble Sort</p>
+                <p>Time: <span id="t-comp">O(n²)</span></p>
+                <p>Space: <span id="s-comp">O(1)</span></p>
+            </div>
+        </aside>
 
-    <main id="visualizer-container">
+        <main class="main-content">
+            <header class="toolbar">
+                <button id="actionBtn" class="primary-btn">Start Animation</button>
+                <button id="resetBtn">Reset Data</button>
+                <input type="range" id="speed" min="1" max="100" value="50">
+            </header>
+
+            <div id="visualizer-area">
+                </div>
+            
+            <div id="step-description">
+                Click Start to begin visualization...
+            </div>
         </main>
-
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
