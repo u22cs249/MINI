@@ -1,95 +1,89 @@
-const visualizer = document.getElementById('visualizer-area');
-const stepText = document.getElementById('step-description');
-let data = [];
+const container = document.getElementById("container");
+const statusText = document.getElementById("status");
+const timeComp = document.getElementById("time-complexity");
+const spaceComp = document.getElementById("space-complexity");
 
-// Configuration for Viva details
-const algoDetails = {
-    sorting: { name: "Bubble Sort", time: "O(n²)", space: "O(1)" },
-    searching: { name: "Binary Search", time: "O(log n)", space: "O(1)" }
-};
+let array = [];
 
-function init(mode = 'sorting') {
-    visualizer.innerHTML = '';
-    data = [];
-    let count = mode === 'sorting' ? 30 : 15;
+// Helper to pause execution for animation
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, 510 - document.getElementById('speed').value));
+
+function generateArray(size = 20) {
+    container.innerHTML = "";
+    array = [];
+    for (let i = 0; i < size; i++) {
+        let val = Math.floor(Math.random() * 100) + 10;
+        array.push(val);
+        const bar = document.createElement("div");
+        bar.classList.add("bar");
+        bar.style.height = `${val * 3}px`;
+        bar.id = `bar-${i}`;
+        bar.innerText = val;
+        container.appendChild(bar);
+    }
+}
+
+async function startVisualization() {
+    const algo = document.getElementById("algorithm").value;
+    document.getElementById("start-btn").disabled = true;
+
+    if (algo === "bubble") {
+        timeComp.innerText = "O(n²)";
+        spaceComp.innerText = "O(1)";
+        await bubbleSort();
+    } else if (algo === "linear") {
+        timeComp.innerText = "O(n)";
+        spaceComp.innerText = "O(1)";
+        await linearSearch(array[Math.floor(Math.random() * array.length)]);
+    }
     
-    for(let i=0; i<count; i++) {
-        let val = mode === 'sorting' ? Math.floor(Math.random()*300)+20 : (i+1)*25;
-        data.push(val);
-        const bar = document.createElement('div');
-        bar.className = 'bar';
-        bar.style.height = `${val}px`;
-        bar.style.width = `${600/count}px`;
-        bar.innerText = mode === 'searching' ? val : '';
-        visualizer.appendChild(bar);
-    }
+    statusText.innerText = "Algorithm Completed!";
+    document.getElementById("start-btn").disabled = false;
 }
 
-async function startSorting() {
-    let bars = document.querySelectorAll('.bar');
-    for(let i=0; i < data.length; i++) {
-        for(let j=0; j < data.length - i - 1; j++) {
-            bars[j].classList.add('comparing');
-            bars[j+1].classList.add('comparing');
-            stepText.innerText = `Comparing ${data[j]} and ${data[j+1]}`;
+// --- BUBBLE SORT ---
+async function bubbleSort() {
+    let bars = document.getElementsByClassName("bar");
+    for (let i = 0; i < array.length; i++) {
+        for (let j = 0; j < array.length - i - 1; j++) {
+            bars[j].style.backgroundColor = "#f39c12"; // Comparing
+            bars[j+1].style.backgroundColor = "#f39c12";
 
-            if(data[j] > data[j+1]) {
-                stepText.innerText = `Swapping ${data[j]} and ${data[j+1]}`;
-                [data[j], data[j+1]] = [data[j+1], data[j]];
-                bars[j].style.height = `${data[j]}px`;
-                bars[j+1].style.height = `${data[j+1]}px`;
+            if (array[j] > array[j + 1]) {
+                statusText.innerText = `Swapping ${array[j]} and ${array[j+1]}`;
+                // Swap values in array
+                [array[j], array[j + 1]] = [array[j + 1], array[j]];
+                // Update UI
+                bars[j].style.height = `${array[j] * 3}px`;
+                bars[j].innerText = array[j];
+                bars[j+1].style.height = `${array[j+1] * 3}px`;
+                bars[j+1].innerText = array[j+1];
             }
-            await new Promise(r => setTimeout(r, 50));
-            bars[j].classList.remove('comparing');
-            bars[j+1].classList.remove('comparing');
+            await sleep();
+            bars[j].style.backgroundColor = "#4a90e2"; // Reset
+            bars[j+1].style.backgroundColor = "#4a90e2";
         }
-        bars[data.length-i-1].classList.add('sorted');
+        bars[array.length - i - 1].style.backgroundColor = "#2ecc71"; // Sorted
     }
-    stepText.innerText = "Array Sorted Successfully!";
 }
 
-async function startBinarySearch() {
-    const target = data[Math.floor(Math.random()*data.length)];
-    let bars = document.querySelectorAll('.bar');
-    let low = 0, high = data.length - 1;
-
-    while(low <= high) {
-        let mid = Math.floor((low + high)/2);
-        bars[mid].classList.add('comparing');
-        stepText.innerText = `Checking middle element: ${data[mid]}`;
-        await new Promise(r => setTimeout(r, 600));
-
-        if(data[mid] === target) {
-            bars[mid].classList.add('sorted');
-            stepText.innerText = `Found target ${target} at index ${mid}!`;
+// --- LINEAR SEARCH ---
+async function linearSearch(target) {
+    let bars = document.getElementsByClassName("bar");
+    statusText.innerText = `Searching for: ${target}`;
+    
+    for (let i = 0; i < array.length; i++) {
+        bars[i].style.backgroundColor = "#f39c12";
+        await sleep();
+        
+        if (array[i] === target) {
+            bars[i].style.backgroundColor = "#2ecc71";
+            statusText.innerText = `Found ${target} at index ${i}!`;
             return;
         }
-        if(data[mid] < target) {
-            for(let i=low; i<=mid; i++) bars[i].style.opacity = "0.3";
-            low = mid + 1;
-        } else {
-            for(let i=mid; i<=high; i++) bars[i].style.opacity = "0.3";
-            high = mid - 1;
-        }
+        bars[i].style.backgroundColor = "#e74c3c"; // Not found
     }
 }
 
-// Event Listeners
-document.getElementById('actionBtn').onclick = () => {
-    const mode = document.getElementById('algo-name').innerText;
-    if(mode === "Bubble Sort") startSorting();
-    else startBinarySearch();
-};
-
-document.getElementById('resetBtn').onclick = () => init();
-
-// Change Lab Mode
-function changeMode(m) {
-    const info = algoDetails[m];
-    document.getElementById('algo-name').innerText = info.name;
-    document.getElementById('t-comp').innerText = info.time;
-    document.getElementById('s-comp').innerText = info.space;
-    init(m);
-}
-
-init();
+// Initial Call
+generateArray();
